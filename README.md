@@ -13,6 +13,8 @@ Each query must represent a valid digit-pattern under ALPHABET_SIZE and WORD_LEN
 
 The order of digits in the score does not correspond to the order of digits. For this code, the score is presented with 0s first, followed by 1s and then 2s. This query-score pattern continues until the Guesser guesses the correct digit-pattern. The guesses may not match the information given so far, but they do have to contain unique digits from the Alphabet and must be of the predecided length. The objective of the guesser is to minimize NUM_GUESSES for each game. 
 
+See sample game at the bottom for an example. 
+
 **Restrictions:**
 - ALPHABET_SIZE <= 10
 - WORD_LEN <= ALPHABET_SIZE
@@ -68,3 +70,20 @@ https://docs.google.com/spreadsheets/d/1Ebnig9PpTZ8JUQZorNNzVFcffMRxEXCH0bY07eGA
 *The fourth algorithm included in the Bagel data simply represents the third algorithm with the first guess randomized. This random-version, although not used for Mastermind testing, represents the default version moving forward.*
 
 *The fifth algorithm in the Bagel data and fourth in the MasterMind data reflects the update 1/16/20 update to prioritize valid configurations. This vastly reduced the average number of guesses for both games.*
+
+## Sample Game (in case the rules were confusing)
+This is a sample game of Bagel, with ALPHABET_SIZE = 10 and WORD_LEN = 3. Guesses were made by the valid-pattern-prioritizing, randomized version of Algorithm 3.
+
+**Scorer's Digit Sequence:** 846 (Unknown to Guesser)
+
+- Guess 1: 510
+  - Score: 000
+- Guess 2: 426
+  - Score: 012
+- Guess 3: 376
+  - Score: 002
+- Guess 4: 238
+  - Score: 001
+- Guess 5: 846
+  - Score: 222 (Game Over!)
+
