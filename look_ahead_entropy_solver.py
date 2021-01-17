@@ -10,7 +10,8 @@ WORD_LEN = 5
 
 RANDOMIZATION = True
 
-SIMULATION = False
+SIMULATION = True
+SIMULATION_FREQUENCY = 0.015
 FILENAME = "results.csv"
 
 
@@ -108,22 +109,29 @@ def guess_number():
 
     while score != "2"*WORD_LEN:
 
-        print("Possibilities:\t", poss)
+        orig_poss_len = len(poss)
+        orig_entropy = entropy_of_val(1/orig_poss_len)
+        if orig_poss_len < 50:
+            print("Possibilities:\t", poss)
+
+        print(orig_poss_len, "possibilities left, indicating", orig_entropy, "bits of information.")
 
         if len(poss) == len(guess_set) or len(poss) == 1:
             if RANDOMIZATION:
                 guess = poss[random.randint(0, len(poss) - 1)]
             else:
                 guess = poss[0]
+            print("Expected Information:", create_entropy_dist([poss[0]], poss)[poss[0]])
         elif len(poss) > 1:
             dist = create_entropy_dist(guess_set, poss)
-            print(dist)
+            # print(dist)
             max_val = 0
             guess = poss[0]
             for tup in dist.items():
-                if tup[1] > max_val:
+                if tup[1] > max_val or (tup[1] == max_val and tup[0] in poss):
                     max_val = tup[1]
                     guess = tup[0]
+            print("Expected Information:", max_val)
         else:
             guess = None
             print("No possibilities left. Please check all previous scorings for errors.")
@@ -149,14 +157,18 @@ def guess_number():
                     print("Purple ", end='')
                 elif c == '7':
                     print("White ", end='')
+            print('\n')
 
-        response = input("\nEnter score:\n").split()
+        response = input("Enter score:\n").split()
 
         score = response[0]
 
         num_guesses += 1
 
         poss = eliminate_poss(guess, score, poss)
+        delta_poss_len = orig_poss_len - len(poss)
+        delta_poss_entropy = orig_entropy - entropy_of_val(1/len(poss))
+        print(delta_poss_len, "possibilities eliminated.", delta_poss_entropy, "bits of information gained.")
 
     print("It took me %d guesses" % num_guesses)
     return
@@ -168,7 +180,7 @@ def guess_number_sim():
     for i in range(0, 10 ** WORD_LEN):
         i = str(i)
         i = "0" * (WORD_LEN - len(i)) + i
-        if check_diff_digits(i) and valid_digits(i): # and random.randint(0, 66) == 0:
+        if check_diff_digits(i) and valid_digits(i) and random.random() < SIMULATION_FREQUENCY:
             all_nums.append(i)
 
     arr_guesses = []
@@ -204,7 +216,7 @@ def guess_number_sim():
                 max_val = 0
                 guess = poss[0]
                 for tup in dist.items():
-                    if tup[1] > max_val:
+                    if tup[1] > max_val or (tup[1] == max_val and tup[0] in poss):
                         max_val = tup[1]
                         guess = tup[0]
             else:

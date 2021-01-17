@@ -35,12 +35,15 @@ The second algorithm contains a flawed information-theoretic implementation. Thi
 
 The third algorithm maintains a list of valid-digit-patterns following each score as well as the initial list of valid patterns constrained by only the ALPHABET_SIZE and WORD_LEN parameters. With each score, it evaluates the entropy of each potential guess — which could be any pattern-sequence in the initial list — by evaluating the probability distribution of the potential scores that the query could yield based on the list of valid-digit-patterns. The entropy of each probability-distribution is then evaluated, and the query that maximizes entropy is posited to the Scorer. Although far more computationally intensive than other algorithms, this virtually eliminates NUM_GUESSES passing over a certain threshold. 
 
+*Update 1/16/20 11:40 p.m: This algorithm now prioritizes guesses that fall within the evolving list of valid-digit-patterns if two guesses have the same entropy, vastly improving efficiency near the end of games. This yielded a significant change in the data, shown in the spreadsheet below.*
+
 ## TODO
 - Implement a fourth algorithm that incorporates the look-ahead strategy of Algorithm 3 and looks ahead more than one move to calculate sub-entropies. Although far more computationally intensive, some sort of random sampling may prove sufficiient to estimate the entropy rather than a full calculation. 
-- Print the expected/actual number of bits of information gained per guess, as well as the amount of information each game contains at the start. 
 
 ## Simulation Data
 The following spreadsheet contains data for simulations of Bagel and Mastermind using the three algorithms. 
 https://docs.google.com/spreadsheets/d/1Ebnig9PpTZ8JUQZorNNzVFcffMRxEXCH0bY07eGA6i4/edit#gid=798220679
-*The fourth algorithm included in the Bagel data simply represents the third algorithm with the first guess randomized. This random-version, although not used
-for Mastermind testing, represents the default version moving forward.*
+
+*The fourth algorithm included in the Bagel data simply represents the third algorithm with the first guess randomized. This random-version, although not used for Mastermind testing, represents the default version moving forward.*
+
+*The fifth algorithm in the Bagel data and fourth in the MasterMind data reflects the update 1/16/20 update to prioritize valid configurations. This vastly reduced the average number of guesses for both games.*
