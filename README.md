@@ -26,19 +26,40 @@ The order of digits in the score does not correspond to the order of digits. For
   - ALPHABET_SIZE = 10
   - WORD_LEN = 3
 
+## Usage
+Run *look_ahead_entropy_solver.py* to have the computer play the Guesser and user play the Scorer. This file uses the third algorithm (see **Algorithm** section).
+This file can also be configured to simulate a number of test cases by changing the parameters at the top of the code. 
+Parameters:
+- **ALPHABET_SIZE** (1 <= int <= 10)
+  - The size of the alphabet, as explained in the rules (# of valid digits)
+- **WORD_LEN** (1 <= int <= ALPHABET_SIZE)
+  - The size of a digit-pattern. Must not exceed the size of the alphabet.
+- **RANDOMIZATION** (True/False)
+  - Whether to randomize the first guess. This should typically be True.
+- **SIMULATION** (True/False)
+  - Whether to run it in simulation mode. This should typically be False unless testing for efficiency. 
+- **SIMULATION_FREQUENCY** (0.0 < float <= 1.0) 
+  - If running a simulation, what fraction of possible digit sequences to actually test
+  - Will be approximated using random() and checking if answer falls below SIMULATION_FREQUENCY
+- **FILENAME** (string)
+  - The output file for array of num_guesses data if running a simulation.
+
+Run *generalized_playable.py* to have the computer play the Scorer and user play the Guesser. The computer will optionally print a list of possibilities (can be toggled with constant at top of code) to aid the user. 
+
+
 ## Algorithm
-The code contains three potential algorithms to play the game. 
+The code contains three potential algorithms to play the game, one of which is maintained and currently used.
 
-The first algorithm represents a primitive algorithm that maintains a list of valid digit-patterns following each score, and simply guesses a randomly-selected valid pattern with each query. 
+The **first algorithm** represents a primitive algorithm that maintains a list of valid digit-patterns following each score, and simply guesses a randomly-selected valid pattern with each query. It is stored in file *Old\ Algorithms/bad_solver.py*.
 
-The second algorithm contains a flawed information-theoretic implementation. This algorithm also maintains a list of valid digit-patterns following each score. From that list, it then generates a probability distribution for how often each digit appears in each position. For instance, for Bagel, this configuration would be stored in a 10x3 matrix. It then 'grades' each valid digit-pattern by taking the sum of the relative entropy of each digit by calculating h(x) = log(1/p) for each digit-position probability. The number-sequence with the highest probability is then guessed. This algorithm presents a problem in that it doesn't consider that placing a digit out-of-position also often yields valuable information. Furthermore, it is rather suspiciously formulated in terms of information theory. 
+The **second algorithm** contains a flawed information-theoretic implementation. This algorithm also maintains a list of valid digit-patterns following each score. From that list, it then generates a probability distribution for how often each digit appears in each position. For instance, for Bagel, this configuration would be stored in a 10x3 matrix. It then 'grades' each valid digit-pattern by taking the sum of the relative entropy of each digit by calculating h(x) = log(1/p) for each digit-position probability. The number-sequence with the highest probability is then guessed. This algorithm presents a problem in that it doesn't consider that placing a digit out-of-position also often yields valuable information. Furthermore, it is rather suspiciously formulated in terms of information theory. It is stored in file *Old\ Algorithms/digit_entropy_solver.py*. 
 
-The third algorithm maintains a list of valid-digit-patterns following each score as well as the initial list of valid patterns constrained by only the ALPHABET_SIZE and WORD_LEN parameters. With each score, it evaluates the entropy of each potential guess — which could be any pattern-sequence in the initial list — by evaluating the probability distribution of the potential scores that the query could yield based on the list of valid-digit-patterns. The entropy of each probability-distribution is then evaluated, and the query that maximizes entropy is posited to the Scorer. Although far more computationally intensive than other algorithms, this virtually eliminates NUM_GUESSES passing over a certain threshold. 
-
-*Update 1/16/20 11:40 p.m: This algorithm now prioritizes guesses that fall within the evolving list of valid-digit-patterns if two guesses have the same entropy, vastly improving efficiency near the end of games. This yielded a significant change in the data, shown in the spreadsheet below.*
+The **third algorithm, the main one** maintains a list of valid-digit-patterns following each score as well as the initial list of valid patterns constrained by only the ALPHABET_SIZE and WORD_LEN parameters. With each score, it evaluates the entropy of each potential guess — which could be any pattern-sequence in the initial list — by evaluating the probability distribution of the potential scores that the query could yield based on the list of valid-digit-patterns. The entropy of each probability-distribution is then evaluated, and the query that maximizes entropy is posited to the Scorer. Although far more computationally intensive than other algorithms, this virtually eliminates NUM_GUESSES passing over a certain threshold. It is stored in file *look_ahead_entropy_solver.py*. 
+ 
+*Update 1/16/20 11:40 p.m: This algorithm now prioritizes guesses that fall within the evolving list of valid-digit-patterns if two guesses have the same entropy, vastly improving efficiency near the end of games. This yielded a significant change in the data and solidified this algorithm as far superior to the previous ones, as shown in the data spreadsheet below.*
 
 ## TODO
-- Implement a fourth algorithm that incorporates the look-ahead strategy of Algorithm 3 and looks ahead more than one move to calculate sub-entropies. Although far more computationally intensive, some sort of random sampling may prove sufficiient to estimate the entropy rather than a full calculation. 
+- Implement a fourth algorithm that incorporates the look-ahead strategy of Algorithm 3 and looks ahead more than one move to calculate sub-entropies. Although far more computationally intensive, some sort of random sampling may prove sufficiient to estimate the entropy rather than a full calculation. Stored in *Old\ Algorithms/look_ahead_multiple.py*
 
 ## Simulation Data
 The following spreadsheet contains data for simulations of Bagel and Mastermind using the three algorithms. 
